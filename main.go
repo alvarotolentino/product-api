@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/alvarotolentino/product-api/handlers"
+	"github.com/gorilla/mux"
 )
 
 type myHandler struct {
@@ -20,8 +21,19 @@ func main() {
 
 	ph := handlers.NewProducts(l)
 
-	sm := http.NewServeMux()
-	sm.Handle("/", ph)
+	sm := mux.NewRouter()
+	getRouter := sm.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", ph.GetProducts)
+
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
+	putRouter.Use(ph.MiddlewareProductValidation)
+
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", ph.AddProduct)
+	postRouter.Use(ph.MiddlewareProductValidation)
+
+	// sm.Handle("/products", ph)
 
 	s := &http.Server{
 		Addr:         ":8000",
@@ -44,7 +56,7 @@ func main() {
 	signal.Notify(sigChan, os.Kill)
 
 	sig := <-sigChan
-	l.Println("Recieved terminate, graceful shutdown", sig)
+	l.Println("Terminated received, graceful shutdown", sig)
 
 	tc, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(tc)

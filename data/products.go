@@ -10,8 +10,13 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
-// Product struct
+// Product defines the structure for an API product
+// swagger:model
 type Product struct {
+	// the id for the product
+	//
+	// required: true
+	// min: 1
 	ID          int     `json:"id"`
 	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
@@ -26,6 +31,12 @@ type Product struct {
 func (p *Product) FromJSON(r io.Reader) error {
 	e := json.NewDecoder(r)
 	return e.Decode(p)
+}
+
+// ToJSON encode a product to JSON
+func (p *Product) ToJSON(w io.Writer) error {
+	e := json.NewEncoder(w)
+	return e.Encode(p)
 }
 
 // Validate check the fields of a struct type
@@ -48,7 +59,7 @@ func validateSKU(fl validator.FieldLevel) bool {
 // Products list of products
 type Products []*Product
 
-// ToJSON enconde a Product struc to JSON
+// ToJSON encode a list of Products struc to JSON
 func (p *Products) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
 	return e.Encode(p)
@@ -76,8 +87,31 @@ func UpdateProduct(id int, p *Product) error {
 	return nil
 }
 
+// DeleteProduct remove a product
+func DeleteProduct(id int) error {
+	_, pos, err := findProduct(id)
+	if err != nil {
+		return err
+	}
+	removeIndex(pos)
+	return nil
+}
+
+// GetProduct return a product by ID
+func GetProduct(id int) (*Product, error) {
+	p, _, err := findProduct(id)
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
 // ErrProductNotFound returns an error format
 var ErrProductNotFound = fmt.Errorf("Product not found")
+
+func removeIndex(index int) {
+	productList = append(productList[:index], productList[index+1:]...)
+}
 
 func findProduct(id int) (*Product, int, error) {
 	for i, p := range productList {

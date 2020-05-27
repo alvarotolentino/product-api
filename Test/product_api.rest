@@ -5,9 +5,9 @@ GET {{base}} HTTP/1.1
 PUT {{base}}/1 HTTP/1.1
 Content-Type: application/json
 
-{"name": "Green Tea"}
+{"name": "Green Tea", "price": 10.90, "SKU": "abc-def-ghi"}
 ###
 POST {{base}} HTTP/1.1
 Content-Type: application/json
 
-{"name":"Water"}
+{"name":"Water",  "price": 5.90, "SKU": "zyx-wvu-tsr"}

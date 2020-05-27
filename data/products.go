@@ -4,41 +4,68 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"regexp"
 	"time"
+
+	"gopkg.in/go-playground/validator.v9"
 )
 
+// Product struct
 type Product struct {
 	ID          int     `json:"id"`
-	Name        string  `json:"name"`
+	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price"`
-	SKU         string  `json:"sku"`
+	Price       float32 `json:"price" validate:"gt=0"`
+	SKU         string  `json:"sku" validate:"required,sku"`
 	CreatedOn   string  `json:"-"`
 	UpdatedOn   string  `json:"-"`
 	DeletedOn   string  `json:"-"`
 }
 
+// FromJSON decode from a JSON value
 func (p *Product) FromJSON(r io.Reader) error {
 	e := json.NewDecoder(r)
 	return e.Decode(p)
 }
 
+// Validate check the fields of a struct type
+func (p *Product) Validate() error {
+	validate := validator.New()
+	validate.RegisterValidation("sku", validateSKU)
+	return validate.Struct(p)
+}
+
+func validateSKU(fl validator.FieldLevel) bool {
+	re := regexp.MustCompile(`[a-z]+-[a-z]+-[a-z]+`)
+	matches := re.FindAllString(fl.Field().String(), -1)
+
+	if len(matches) != 1 {
+		return false
+	}
+	return true
+}
+
+// Products list of products
 type Products []*Product
 
+// ToJSON enconde a Product struc to JSON
 func (p *Products) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
 	return e.Encode(p)
 }
 
+// GetProducts returns the list of products
 func GetProducts() Products {
 	return productList
 }
 
+// AddProduct appends a new product
 func AddProduct(p *Product) {
 	p.ID = getNextID()
 	productList = append(productList, p)
 }
 
+// UpdateProduct update an existing product record
 func UpdateProduct(id int, p *Product) error {
 	_, pos, err := findProduct(id)
 	if err != nil {
@@ -49,6 +76,7 @@ func UpdateProduct(id int, p *Product) error {
 	return nil
 }
 
+// ErrProductNotFound returns an error format
 var ErrProductNotFound = fmt.Errorf("Product not found")
 
 func findProduct(id int) (*Product, int, error) {

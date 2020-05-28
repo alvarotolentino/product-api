@@ -23,10 +23,10 @@ func NewProducts(l *log.Logger) *Products {
 type KeyProduct struct{}
 
 // MiddlewareProductValidation validates all request
-func (p Products) MiddlewareProductValidation(next http.Handler) http.Handler {
+func (p *Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		prod := data.Product{}
-		err := prod.FromJSON(r.Body)
+		prod := &data.Product{}
+		err := data.FromJSON(prod, r.Body)
 		if err != nil {
 			http.Error(w, "Error reading product", http.StatusBadRequest)
 			return

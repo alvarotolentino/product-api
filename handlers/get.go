@@ -17,7 +17,7 @@ import (
 func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle GET Products")
 	lp := data.GetProducts()
-	err := lp.ToJSON(w)
+	err := data.ToJSON(lp, w)
 	if err != nil {
 		http.Error(w, "Unable to marshal json", http.StatusInternalServerError)
 	}
@@ -45,7 +45,7 @@ func (p *Products) GetProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = prod.ToJSON(w)
+	err = data.ToJSON(prod, w)
 	if err != nil {
 		http.Error(w, "Unable to read product", http.StatusInternalServerError)
 		return

@@ -1,13 +1,8 @@
 package data
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"regexp"
 	"time"
-
-	"gopkg.in/go-playground/validator.v9"
 )
 
 // Product defines the structure for an API product
@@ -23,43 +18,8 @@ type Product struct {
 	DeletedOn   string  `json:"-"`
 }
 
-// FromJSON decode from a JSON value
-func (p *Product) FromJSON(r io.Reader) error {
-	e := json.NewDecoder(r)
-	return e.Decode(p)
-}
-
-// ToJSON encode a product to JSON
-func (p *Product) ToJSON(w io.Writer) error {
-	e := json.NewEncoder(w)
-	return e.Encode(p)
-}
-
-// Validate check the fields of a struct type
-func (p *Product) Validate() error {
-	validate := validator.New()
-	validate.RegisterValidation("sku", validateSKU)
-	return validate.Struct(p)
-}
-
-func validateSKU(fl validator.FieldLevel) bool {
-	re := regexp.MustCompile(`[a-z]+-[a-z]+-[a-z]+`)
-	matches := re.FindAllString(fl.Field().String(), -1)
-
-	if len(matches) != 1 {
-		return false
-	}
-	return true
-}
-
 // Products list of products
 type Products []*Product
-
-// ToJSON encode a list of Products struc to JSON
-func (p *Products) ToJSON(w io.Writer) error {
-	e := json.NewEncoder(w)
-	return e.Encode(p)
-}
 
 // GetProducts returns the list of products
 func GetProducts() Products {

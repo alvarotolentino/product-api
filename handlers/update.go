@@ -25,9 +25,9 @@ func (p *Products) UpdateProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p.l.Println("Handle PUT Product", id)
-	prod := r.Context().Value(KeyProduct{}).(data.Product)
+	prod := r.Context().Value(KeyProduct{}).(*data.Product)
 	
-	err = data.UpdateProduct(id, &prod)
+	err = data.UpdateProduct(id, prod)
 	if err == data.ErrProductNotFound {
 		http.Error(w, "Product not found", http.StatusNotFound)
 		return

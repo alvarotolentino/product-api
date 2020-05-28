@@ -9,8 +9,10 @@ import (
 )
 
 // swagger:route DELETE /products/{id} products deleteProduct
+// Delete a product
 // responses:
 //  201: noContent
+//  404: productNotFound
 
 // DeleteProduct deletes a product from the data store
 func (p *Products) DeleteProduct(w http.ResponseWriter, r *http.Request) {

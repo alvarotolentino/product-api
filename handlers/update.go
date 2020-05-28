@@ -8,6 +8,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// swagger:route PUT /products/{id} products updateProduct
+// Update an existing product
+// responses:
+//  200: noContent
+//  400: validationError
+//  404: productNotFound
+
 // UpdateProducts updates a product by the ID
 func (p *Products) UpdateProducts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

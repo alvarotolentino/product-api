@@ -23,6 +23,12 @@ func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:route GET /products/{id} products getProduct
+// Returns a product
+// responses:
+//  200: productResponse
+//  404: productNotFound
+
 // GetProduct returns a product from the data store
 func (p *Products) GetProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

@@ -9,9 +9,7 @@ definitions:
         type: string
         x-go-name: Description
       id:
-        description: the id for the product
         format: int64
-        minimum: 1
         type: integer
         x-go-name: ID
       name:
@@ -24,8 +22,6 @@ definitions:
       sku:
         type: string
         x-go-name: SKU
-    required:
-    - id
     type: object
     x-go-package: github.com/alvarotolentino/product-api/data
 info:
@@ -42,11 +38,29 @@ paths:
           $ref: '#/responses/productsResponse'
       tags:
       - products
+    post:
+      description: Create a new product
+      operationId: addProduct
+      parameters:
+      - description: Product data structure to Update or Create.
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/Product'
+      responses:
+        "200":
+          $ref: '#/responses/noContent'
+        "400":
+          $ref: '#/responses/validationError'
+      tags:
+      - products
   /products/{id}:
     delete:
+      description: Delete a product
       operationId: deleteProduct
       parameters:
-      - description: The id of the product to delete from the data store
+      - description: The id of the product
         format: int64
         in: path
         name: id
@@ -56,18 +70,77 @@ paths:
       responses:
         "201":
           $ref: '#/responses/noContent'
+        "404":
+          $ref: '#/responses/productNotFound'
+      tags:
+      - products
+    get:
+      description: Returns a product
+      operationId: getProduct
+      parameters:
+      - description: The id of the product
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/productResponse'
+        "404":
+          $ref: '#/responses/productNotFound'
+      tags:
+      - products
+    put:
+      description: Update an existing product
+      operationId: updateProduct
+      parameters:
+      - description: The id of the product
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      - description: Product data structure to Update or Create.
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/Product'
+      responses:
+        "200":
+          $ref: '#/responses/noContent'
+        "400":
+          $ref: '#/responses/validationError'
+        "404":
+          $ref: '#/responses/productNotFound'
       tags:
       - products
 produces:
 - application/json
 responses:
   noContent: {}
+  productNotFound: {}
+  productResponse:
+    description: A product record
+    schema:
+      $ref: '#/definitions/Product'
   productsResponse:
     description: A list of products returns in the response
     schema:
       items:
         $ref: '#/definitions/Product'
       type: array
+  validationError:
+    schema:
+      properties:
+        Error:
+          type: string
+        Key:
+          type: string
+      type: object
 schemes:
 - http
 swagger: "2.0"

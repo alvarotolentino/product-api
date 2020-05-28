@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	gohandlers "github.com/gorilla/handlers"
 	"github.com/alvarotolentino/product-api/handlers"
 	"github.com/gorilla/mux"
 	"github.com/go-openapi/runtime/middleware"
@@ -42,11 +43,13 @@ func main() {
 	sh := middleware.Redoc(opts, nil)
 
 	getRouter.Handle("/docs", sh)
-getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
+	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
+
+	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"http://localhost:3000"}))
 
 	s := &http.Server{
 		Addr:         ":8000",
-		Handler:      sm,
+		Handler:      ch(sm),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,

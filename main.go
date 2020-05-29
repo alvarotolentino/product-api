@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"time"
 
-	gohandlers "github.com/gorilla/handlers"
 	"github.com/alvarotolentino/product-api/handlers"
-	"github.com/gorilla/mux"
 	"github.com/go-openapi/runtime/middleware"
+	gohandlers "github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 )
 
 type myHandler struct {

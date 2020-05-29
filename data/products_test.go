@@ -4,9 +4,9 @@ import "testing"
 
 func TestChecksValidation(t *testing.T) {
 	p := &Product{
-		Name: "Alvaro",
+		Name:  "Alvaro",
 		Price: 1.00,
-		SKU: "abc-edf-ghi",
+		SKU:   "abc-edf-ghi",
 	}
 	err := p.Validate()
 	if err != nil {

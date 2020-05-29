@@ -29,11 +29,10 @@ type productNotFoundError struct {
 type validationErrorWrapper struct {
 	// The error message
 	// in:body
-	Body struct{
-		Key string
+	Body struct {
+		Key   string
 		Error string
 	}
-
 }
 
 // A product record
@@ -54,7 +53,6 @@ type productsResponseWrapper struct {
 
 // swagger:response noContent
 type productsNoContect struct {
-	
 }
 
 // swagger:parameters deleteProduct getProduct updateProduct
